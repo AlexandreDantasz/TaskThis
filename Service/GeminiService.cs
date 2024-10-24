@@ -34,16 +34,16 @@ namespace TaskThis.Service
                     {
                         Parts = new[]
                         {
-                            new Part { Text = $@"Gere uma lista de afazeres, na seguinte sintaxe sem Markdown e foque apenas em entregar um JSON onde cada elemento é um dicionário onde a chave é o titulo e o valor é a descrição
-                            Exemplo: 
+                            new Part { Text = $@"Generate a to-do list in the following syntax without Markdown and focus solely on delivering a JSON where each element is a dictionary, with the key being the title and the value being the description.
+                            Example: 
                                 [
                                   {{
-                                    ""Titulo"": ""Criar a interface do usuário"",
-                                    ""Descricao"": ""Desenvolver o layout do aplicativo, incluindo a tela inicial, a tela do Talking Tom e as opções de interação.""
+                                    ""Title"": ""Create the user interface"",
+                                    ""Description"": ""Develop the app layout, including the home screen, the Talking Tom screen, and interaction options.""
                                   }}
                                 ]
 
-                            Essa lista deve ser focada em atingir o seguinte objetivo: {Goal}" }
+                            This list should focus on achieving the following goal: {Goal}" }
                         }
                     }
                 }

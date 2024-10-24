@@ -2,11 +2,16 @@
 using System.CommandLine.NamingConventionBinder;
 using System.Threading.Tasks;
 using TaskThis.Controller;
+using TaskThis.View;
 using dotenv.net;
+using System.ComponentModel.Design;
+
+namespace TaskThis;
 
 class Program
 {
     private static GeminiController geminiController = new GeminiController();
+    private static Menu menu = new Menu();
 
     static async Task<int> Main(string[] args)
     {
@@ -23,16 +28,17 @@ class Program
 
         root.Handler = CommandHandler.Create<string>(async (goal) =>
         {
+            menu.Processing();
             if (await geminiController.ProcessGoal(goal))
             {
-                Console.WriteLine("Resposta recebida");
+                menu.TaskDone();
                 foreach (var a in geminiController.toDo)
                 {
-                    Console.WriteLine($"{a.Titulo} : {a.Descricao}");
+                    Console.WriteLine($"{a.Title} : {a.Description}");
                 }
             }
             else
-                Console.WriteLine("Couldn't process goal");
+                menu.ErrorMessage("Couldn't process goal");
         });
 
         return await root.InvokeAsync(args);

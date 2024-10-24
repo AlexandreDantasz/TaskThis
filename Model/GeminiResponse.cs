@@ -15,7 +15,7 @@ namespace TaskThis.Model
 
     class TaskItem
     {
-        public string Titulo { get; set; } = string.Empty;
-        public string Descricao { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
     }
 }
