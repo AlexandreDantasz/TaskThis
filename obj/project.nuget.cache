@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "8kgbVIjkQ/c=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\alexa\\dev\\TaskThis\\TaskThis.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\alexa\\.nuget\\packages\\dotenv.net\\3.2.1\\dotenv.net.3.2.1.nupkg.sha512",
+    "C:\\Users\\alexa\\.nuget\\packages\\system.commandline\\2.0.0-beta4.22272.1\\system.commandline.2.0.0-beta4.22272.1.nupkg.sha512",
+    "C:\\Users\\alexa\\.nuget\\packages\\system.commandline.namingconventionbinder\\2.0.0-beta4.22272.1\\system.commandline.namingconventionbinder.2.0.0-beta4.22272.1.nupkg.sha512"
+  ],
+  "logs": []
+}
