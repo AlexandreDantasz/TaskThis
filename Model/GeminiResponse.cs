@@ -12,4 +12,10 @@ namespace TaskThis.Model
         [JsonPropertyName("candidates")]
         public Candidate[] Candidates { get; set; } = [];
     }
+
+    class TaskItem
+    {
+        public string Titulo { get; set; } = string.Empty;
+        public string Descricao { get; set; } = string.Empty;
+    }
 }

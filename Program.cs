@@ -23,9 +23,14 @@ class Program
 
         root.Handler = CommandHandler.Create<string>(async (goal) =>
         {
-            string? res = await geminiController.ProcessGoal(goal);
-            if (!string.IsNullOrEmpty(res))
-                Console.WriteLine(res);
+            if (await geminiController.ProcessGoal(goal))
+            {
+                Console.WriteLine("Resposta recebida");
+                foreach (var a in geminiController.toDo)
+                {
+                    Console.WriteLine($"{a.Titulo} : {a.Descricao}");
+                }
+            }
             else
                 Console.WriteLine("Couldn't process goal");
         });
