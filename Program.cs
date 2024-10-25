@@ -29,13 +29,27 @@ class Program
         root.Handler = CommandHandler.Create<string>(async (goal) =>
         {
             menu.Processing();
-            if (await geminiController.ProcessGoal(goal))
+            if (await geminiController.ProcessGoal(goal) && geminiController.toDo is not null)
             {
                 menu.TaskDone();
-                foreach (var a in geminiController.toDo)
+                do 
                 {
-                    Console.WriteLine($"{a.Title} : {a.Description}");
+                    switch (menu.Options())
+                    {
+                        case 1:
+                            menu.ListTasks(geminiController.toDo);
+                            break;
+                        
+                        case 2:
+                            break;
+
+                        default:
+                            // Significa que a tecla escape foi clicada, a aplicação deve ser fechada
+                            Environment.Exit(0);
+                            break;
+                    }
                 }
+                while (true);
             }
             else
                 menu.ErrorMessage("Couldn't process goal");
