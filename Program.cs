@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using TaskThis.Controller;
 using TaskThis.View;
 using dotenv.net;
-using System.ComponentModel.Design;
 
 namespace TaskThis;
 
@@ -32,6 +31,8 @@ class Program
             if (await geminiController.ProcessGoal(goal) && geminiController.toDo is not null)
             {
                 menu.TaskDone();
+                PomodoroController pomodoroController = new PomodoroController();
+
                 do 
                 {
                     switch (menu.Options())
@@ -41,6 +42,7 @@ class Program
                             break;
                         
                         case 2:
+                            menu.StartPomodoro(pomodoroController.pomodoro);
                             break;
 
                         default:

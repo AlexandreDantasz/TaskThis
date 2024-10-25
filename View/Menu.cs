@@ -48,9 +48,9 @@ class Menu
         Console.Write('\n');
     }
 
-    private static void TabToCenter()
+    private static void TabToCenter(int titleSize)
     {
-        for (int i = 0; i < Console.WindowWidth / 2 - 17; i++)
+        for (int i = 0; i < (Console.WindowWidth - titleSize - 1) / 2 ; i++)
             Console.Write(' ');
     }
 
@@ -123,12 +123,12 @@ class Menu
         short option = 0;
         Console.BackgroundColor = ConsoleColor.Black;
         Console.ForegroundColor = ConsoleColor.Yellow;
-
-        Header(" TaskThis Options ");
+        string title = " TaskThis Options ";
+        Header(title);
         Console.WriteLine("Press ESC to exit");
-        TabToCenter();
+        TabToCenter(title.Length);
         Console.WriteLine("1 - List your tasks");
-        TabToCenter();
+        TabToCenter(title.Length);
         Console.WriteLine("2 - Set Pomodoro\n");
         while (!OptionsInput(ref option))
         {
@@ -166,5 +166,54 @@ class Menu
 
         Console.WriteLine();
 
+    }
+
+    public void StartPomodoro(Pomodoro pomodoro)
+    {
+        bool firstTime = false;
+
+        Console.BackgroundColor = ConsoleColor.Black;
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine();
+        string title = " Pomodoro Timer ";
+        Header(title);
+
+        int workMinutes = pomodoro.Work;
+        int workSeconds = 0;
+
+        Console.WriteLine("Press ESC to exit");
+        Console.WriteLine("Press P to pause or play");
+        TabToCenter(title.Length);
+
+        while (workMinutes != 0 || workSeconds != 0)
+        {
+            Thread.Sleep(1000);
+            workSeconds--;
+
+            if (workSeconds == -1)
+            {
+                if (workMinutes > 0)
+                {
+                    workSeconds = 59;
+                    workMinutes--;
+                }
+            }
+
+            if (firstTime)
+            {
+                for (int i = 0; i < 5; i++)
+                    ClearLetter();
+            }
+
+
+            Console.Write((workMinutes >= 10) ? workMinutes.ToString() : $"0{workMinutes}");
+            Console.Write(":");
+            Console.Write((workSeconds >= 10) ? workSeconds.ToString() : $"0{workSeconds}");
+
+            firstTime = true;
+            
+        }
+
+        Console.WriteLine();
     }
 }
