@@ -4,9 +4,9 @@
 ![GitHub language count](https://img.shields.io/github/languages/count/AlexandreDantasz/TaskThis?style=for-the-badge)
 ![GitHub forks](https://img.shields.io/github/forks/AlexandreDantasz/TaskThis?style=for-the-badge)
 
-<img src="imagem.png" alt="Exemplo imagem">
+<img src="./Assets/usage.png" alt="Exemplo imagem">
 
-> Linha adicional de texto informativo sobre o que o projeto faz. Sua introdução deve ter cerca de 2 ou 3 linhas. Não exagere, as pessoas não vão ler.
+> Uma ferramenta que usa IA para definir tarefas para atingir o seu objetivo e que integra com a técnica Pomodoro!
 
 ### Ajustes e melhorias
 
