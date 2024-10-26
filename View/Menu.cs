@@ -6,6 +6,8 @@ namespace TaskThis.View;
 
 class Menu
 {
+    private volatile bool playPomodoro = true, isExitPressed = false;
+
     public void Processing()
     {
         Console.BackgroundColor = ConsoleColor.Black;
@@ -129,7 +131,7 @@ class Menu
         TabToCenter(title.Length);
         Console.WriteLine("1 - List your tasks");
         TabToCenter(title.Length);
-        Console.WriteLine("2 - Set Pomodoro\n");
+        Console.WriteLine("2 - Start Pomodoro\n");
         while (!OptionsInput(ref option))
         {
             Console.ForegroundColor = ConsoleColor.Red;
@@ -171,7 +173,9 @@ class Menu
     public void StartPomodoro(Pomodoro pomodoro)
     {
         bool firstTime = false;
-
+        playPomodoro = true;
+        isExitPressed = false;
+        
         Console.BackgroundColor = ConsoleColor.Black;
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine();
@@ -183,37 +187,113 @@ class Menu
 
         Console.WriteLine("Press ESC to exit");
         Console.WriteLine("Press P to pause or play");
-        TabToCenter(title.Length);
+        Console.WriteLine();
 
-        while (workMinutes != 0 || workSeconds != 0)
-        {
-            Thread.Sleep(1000);
-            workSeconds--;
-
-            if (workSeconds == -1)
+        Thread keyValues = new Thread(() => {
+            do
             {
-                if (workMinutes > 0)
+                ConsoleKeyInfo input = Console.ReadKey(intercept: true);
+                if (input.Key == ConsoleKey.Escape)
                 {
-                    workSeconds = 59;
-                    workMinutes--;
+                    isExitPressed = true;
+                    Console.Clear();
                 }
-            }
+                    
+                else if (input.Key == ConsoleKey.P)
+                    playPomodoro = !playPomodoro;
 
-            if (firstTime)
+                Thread.Sleep(200);
+            } while (!isExitPressed);
+        });
+
+        keyValues.Start();
+
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Write("Work timer: ");
+
+        while (!isExitPressed && (workMinutes != 0 || workSeconds != 0))
+        {
+            if (playPomodoro)
             {
-                for (int i = 0; i < 5; i++)
-                    ClearLetter();
+                Thread.Sleep(1000);
+                workSeconds--;
+
+                if (workSeconds == -1)
+                {
+                    if (workMinutes > 0)
+                    {
+                        workSeconds = 59;
+                        workMinutes--;
+                    }
+                }
+
+                if (firstTime)
+                {
+                    for (int i = 0; i < 5; i++)
+                        ClearLetter();
+                }
+
+                if (!isExitPressed)
+                {
+                    Console.Write((workMinutes >= 10) ? workMinutes.ToString() : $"0{workMinutes}");
+                    Console.Write(":");
+                    Console.Write((workSeconds >= 10) ? workSeconds.ToString() : $"0{workSeconds}");
+                }
+                
+
+                firstTime = true;
             }
-
-
-            Console.Write((workMinutes >= 10) ? workMinutes.ToString() : $"0{workMinutes}");
-            Console.Write(":");
-            Console.Write((workSeconds >= 10) ? workSeconds.ToString() : $"0{workSeconds}");
-
-            firstTime = true;
+            
             
         }
 
         Console.WriteLine();
+        
+        // If exit wasn't press we need to start resting timer
+        if (!isExitPressed)
+        {
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            firstTime = false;
+
+            int restMinutes = pomodoro.Rest;
+            int restSeconds = 0;
+
+            Console.Write("Rest timer: ");
+
+            while (!isExitPressed && (restMinutes != 0 || restSeconds != 0))
+            {
+                if (playPomodoro)
+                {
+                    Thread.Sleep(1000);
+                    restSeconds--;
+
+                    if (restSeconds == -1)
+                    {
+                        if (restMinutes > 0)
+                        {
+                            restSeconds = 59;
+                            restMinutes--;
+                        }
+                    }
+
+                    if (firstTime)
+                    {
+                        for (int i = 0; i < 5; i++)
+                            ClearLetter();
+                    }
+
+                    if (!isExitPressed)
+                    {
+                        Console.Write((restMinutes >= 10) ? restMinutes.ToString() : $"0{restMinutes}");
+                        Console.Write(":");
+                        Console.Write((restSeconds >= 10) ? restSeconds.ToString() : $"0{restSeconds}");
+                    }
+
+                    firstTime = true;
+                }            
+            }
+        }
     }
+
 }

@@ -1,6 +1,5 @@
 ﻿using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
-using System.Threading.Tasks;
 using TaskThis.Controller;
 using TaskThis.View;
 using dotenv.net;
@@ -19,8 +18,8 @@ class Program
         RootCommand root = new RootCommand()
         {
             new Option<string>("-goal", "Description of your goal") {IsRequired = true},
-            new Option<int>("-work", () => 50, "Your working time in minutes (default: 50min)"),
-            new Option<int>("-rest", () => 10, "Your resting time in minutes (default: 10min)")
+            new Option<int>("-work", () => 50, "Your working time in minutes (default: 50min, max: 60min)"),
+            new Option<int>("-rest", () => 10, "Your resting time in minutes (default: 10min, max: 30min)")
         };
 
         root.Description = "A task creator that uses AI and a pomodoro timer!";
