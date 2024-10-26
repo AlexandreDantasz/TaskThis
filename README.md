@@ -71,9 +71,9 @@ TaskThis -goal "Como criar um Windows Forms em C#?" -work 10 -rest 5
 TaskThis -h
 ```
 
-## 📫 Contribuindo para <nome_do_projeto>
+## 📫 Contribuindo para o TaskThis
 
-Para contribuir com <nome_do_projeto>, siga estas etapas:
+Para contribuir com o TaskThis, siga estas etapas:
 
 1. Bifurque este repositório.
 2. Crie um branch: `git checkout -b <nome_branch>`.
