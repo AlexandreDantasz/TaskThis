@@ -9,7 +9,7 @@ namespace TaskThis.Service
     class GeminiService
     {
 
-        private HttpClient Client = new HttpClient();
+        private static readonly HttpClient Client = new HttpClient();
         private string Goal { get; set; } = string.Empty;
 
         public GeminiService(string goal)
@@ -24,7 +24,13 @@ namespace TaskThis.Service
 
         public async Task<List<TaskItem>?> Answer()
         {
-            string url = $"https://generativelanguage.googleapis.com/v1beta/models/{Environment.GetEnvironmentVariable("GEMINI_MODEL")}/:generateContent?key={Environment.GetEnvironmentVariable("GEMINI_KEY")}";
+            string? model = Environment.GetEnvironmentVariable("GEMINI_MODEL");
+            string? key = Environment.GetEnvironmentVariable("GEMINI_KEY");
+
+            if (string.IsNullOrWhiteSpace(model) || string.IsNullOrEmpty(key))
+                throw new Exception("Environment variables GEMINI_MODEL or GEMINI_KEY are not set");
+
+            string url = $"https://generativelanguage.googleapis.com/v1beta/models/{model}/:generateContent?key={key}";
 
             GeminiRequest requestBody = new GeminiRequest
             {
@@ -57,7 +63,7 @@ namespace TaskThis.Service
             string responseContent = await response.Content.ReadAsStringAsync();
             GeminiResponse? res = JsonSerializer.Deserialize<GeminiResponse>(responseContent);
 
-            if (res != null)
+            if (res != null && res?.Candidates[0].content.Parts[0].Text is not null)
                 return JsonSerializer.Deserialize<List<TaskItem>>(TrimJsonResponse(res.Candidates[0].content.Parts[0].Text));
             else return null;
         }

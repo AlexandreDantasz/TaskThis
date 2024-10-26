@@ -3,17 +3,21 @@ using System.CommandLine.NamingConventionBinder;
 using TaskThis.Controller;
 using TaskThis.View;
 using dotenv.net;
+using System.Text.Json;
 
 namespace TaskThis;
 
+
+
 class Program
 {
+    private static readonly string envPath = @"[Path]";
     private static GeminiController geminiController = new GeminiController();
     private static Menu menu = new Menu();
 
     static async Task<int> Main(string[] args)
     {
-        DotEnv.Load();
+        DotEnv.Load(new DotEnvOptions(true, [envPath]));
 
         RootCommand root = new RootCommand()
         {
@@ -26,37 +30,52 @@ class Program
 
         root.Handler = CommandHandler.Create<string, int, int>(async (goal, work, rest) =>
         {
-            PomodoroController pomodoroController = new PomodoroController();
-            menu.Processing();
-            if (!pomodoroController.SetWork(work))
-                    menu.ErrorMessage("Working time isn't correct");
-            else if (!pomodoroController.SetRest(rest))
-                menu.ErrorMessage("Resting time isn't correct");
-            else if (await geminiController.ProcessGoal(goal) && geminiController.toDo is not null)
+            try
             {
-                menu.TaskDone();
-                do 
+                PomodoroController pomodoroController = new PomodoroController();
+                menu.Processing();
+                if (!pomodoroController.SetWork(work))
+                        menu.ErrorMessage($"Working time {work}min isn't valid. Please choose a value between 1 and 60.");
+                else if (!pomodoroController.SetRest(rest))
+                    menu.ErrorMessage($"Resting time {rest}min isn't valid. Please choose a value between 1 and 60.");
+                else if (await geminiController.ProcessGoal(goal) && geminiController.toDo is not null)
                 {
-                    switch (menu.Options())
+                    menu.TaskDone();
+                    do 
                     {
-                        case 1:
-                            menu.ListTasks(geminiController.toDo);
-                            break;
-                        
-                        case 2:
-                            menu.StartPomodoro(pomodoroController.pomodoro);
-                            break;
+                        switch (menu.Options())
+                        {
+                            case 1:
+                                menu.ListTasks(geminiController.toDo);
+                                break;
+                            
+                            case 2:
+                                menu.StartPomodoro(pomodoroController.pomodoro);
+                                break;
 
-                        default:
-                            // Significa que a tecla escape foi clicada, a aplicação deve ser fechada
-                            Environment.Exit(0);
-                            break;
+                            default:
+                                // Significa que a tecla escape foi clicada, a aplicação deve ser fechada
+                                Environment.Exit(0);
+                                break;
+                        }
                     }
+                    while (true);
                 }
-                while (true);
+                else
+                    menu.ErrorMessage("Couldn't process goal");
             }
-            else
-                menu.ErrorMessage("Couldn't process goal");
+            catch (HttpRequestException httpError)
+            {
+                menu.ErrorMessage("The connection with the API couldn't be stabilish. Check your network!");
+            }
+            catch (JsonException jsonError)
+            {
+                menu.ErrorMessage("The API doesn't gave the expected response. Try again later!");
+            }
+            catch (Exception error)
+            {
+                menu.ErrorMessage(error.Message);
+            }
         });
 
         return await root.InvokeAsync(args);
