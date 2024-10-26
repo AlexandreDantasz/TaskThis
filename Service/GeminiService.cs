@@ -9,7 +9,7 @@ namespace TaskThis.Service
     class GeminiService
     {
 
-        private HttpClient Client = new HttpClient();
+        private static readonly HttpClient Client = new HttpClient();
         private string Goal { get; set; } = string.Empty;
 
         public GeminiService(string goal)
@@ -24,7 +24,13 @@ namespace TaskThis.Service
 
         public async Task<List<TaskItem>?> Answer()
         {
-            string url = $"https://generativelanguage.googleapis.com/v1beta/models/{Environment.GetEnvironmentVariable("GEMINI_MODEL")}/:generateContent?key={Environment.GetEnvironmentVariable("GEMINI_KEY")}";
+            string? model = Environment.GetEnvironmentVariable("GEMINI_MODEL");
+            string? key = Environment.GetEnvironmentVariable("GEMINI_KEY");
+
+            if (string.IsNullOrWhiteSpace(model) || string.IsNullOrEmpty(key))
+                throw new Exception("Environment variables GEMINI_MODEL or GEMINI_KEY are not set");
+
+            string url = $"https://generativelanguage.googleapis.com/v1beta/models/{model}/:generateContent?key={key}";
 
             GeminiRequest requestBody = new GeminiRequest
             {
@@ -34,16 +40,16 @@ namespace TaskThis.Service
                     {
                         Parts = new[]
                         {
-                            new Part { Text = $@"Gere uma lista de afazeres, na seguinte sintaxe sem Markdown e foque apenas em entregar um JSON onde cada elemento é um dicionário onde a chave é o titulo e o valor é a descrição
-                            Exemplo: 
+                            new Part { Text = $@"Generate a to-do list in the following syntax without Markdown and focus solely on delivering a JSON where each element is a dictionary, with the key being the title and the value being the description.
+                            Example: 
                                 [
                                   {{
-                                    ""Titulo"": ""Criar a interface do usuário"",
-                                    ""Descricao"": ""Desenvolver o layout do aplicativo, incluindo a tela inicial, a tela do Talking Tom e as opções de interação.""
+                                    ""Title"": ""Create the user interface"",
+                                    ""Description"": ""Develop the app layout, including the home screen, the Talking Tom screen, and interaction options.""
                                   }}
                                 ]
 
-                            Essa lista deve ser focada em atingir o seguinte objetivo: {Goal}" }
+                            This list should focus on achieving the following goal: {Goal}" }
                         }
                     }
                 }
@@ -57,7 +63,7 @@ namespace TaskThis.Service
             string responseContent = await response.Content.ReadAsStringAsync();
             GeminiResponse? res = JsonSerializer.Deserialize<GeminiResponse>(responseContent);
 
-            if (res != null)
+            if (res != null && res?.Candidates[0].content.Parts[0].Text is not null)
                 return JsonSerializer.Deserialize<List<TaskItem>>(TrimJsonResponse(res.Candidates[0].content.Parts[0].Text));
             else return null;
         }

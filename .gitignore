@@ -1,2 +1,5 @@
 .env
 .vs/
+nupkg/
+obj/
+bin/
