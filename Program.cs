@@ -18,21 +18,24 @@ class Program
 
         RootCommand root = new RootCommand()
         {
-            new Option<string>("-goal", "Description of your goal (required)"),
-            new Option<int>("-work", "Your working time in minutes (default: 50min)"),
-            new Option<int>("-rest", "Your resting time in minutes (default: 10min)")
+            new Option<string>("-goal", "Description of your goal") {IsRequired = true},
+            new Option<int>("-work", () => 50, "Your working time in minutes (default: 50min)"),
+            new Option<int>("-rest", () => 10, "Your resting time in minutes (default: 10min)")
         };
 
         root.Description = "A task creator that uses AI and a pomodoro timer!";
 
-        root.Handler = CommandHandler.Create<string>(async (goal) =>
+        root.Handler = CommandHandler.Create<string, int, int>(async (goal, work, rest) =>
         {
+            PomodoroController pomodoroController = new PomodoroController();
             menu.Processing();
-            if (await geminiController.ProcessGoal(goal) && geminiController.toDo is not null)
+            if (!pomodoroController.SetWork(work))
+                    menu.ErrorMessage("Working time isn't correct");
+            else if (!pomodoroController.SetRest(rest))
+                menu.ErrorMessage("Resting time isn't correct");
+            else if (await geminiController.ProcessGoal(goal) && geminiController.toDo is not null)
             {
                 menu.TaskDone();
-                PomodoroController pomodoroController = new PomodoroController();
-
                 do 
                 {
                     switch (menu.Options())
