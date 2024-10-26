@@ -11,7 +11,7 @@ namespace TaskThis;
 
 class Program
 {
-    private static readonly string envPath = @"C:\Users\alexa\dev\TaskThis\.env";
+    private static readonly string envPath = @"[Path]";
     private static GeminiController geminiController = new GeminiController();
     private static Menu menu = new Menu();
 
