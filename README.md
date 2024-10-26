@@ -34,7 +34,7 @@ Para Linux, MacOs e Windows:
 ```csharp
 dotnet restore
 ```
-### Para fazer a build da ferramente:
+### Para fazer a build da ferramenta:
 ```csharp
 dotnet build
 ```
